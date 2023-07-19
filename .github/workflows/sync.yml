@@ -28,13 +28,10 @@ jobs:
       - name: Pull latest Docker image from Quay.io
         run: docker pull quay.io/keycloak/keycloak:latest
 
-      - name: Pull latest Docker image from Quay.io
-        run: docker pull quay.io/keycloak/keycloak:latest
-
       - name: Get image version from Docker metadata
         id: version
         run: |
-          VERSION=$(docker image inspect quay.io/quay.io/keycloak/keycloak:latest --format='{{ index .Config.Labels "org.opencontainers.image.version" }}')
+          VERSION=$(docker image inspect quay.io/keycloak/keycloak:latest --format='{{ index .Config.Labels "org.opencontainers.image.version" }}')
           echo "::set-output name=version::$VERSION"
 
       - name: Tag the Docker image with version
