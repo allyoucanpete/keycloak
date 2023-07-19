@@ -1,0 +1,51 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      
+      - name: Pull latest Docker image from Quay.io
+        run: docker pull quay.io/keycloak/keycloak:latest
+
+      - name: Pull latest Docker image from Quay.io
+        run: docker pull quay.io/keycloak/keycloak:latest
+
+      - name: Get image version from Docker metadata
+        id: version
+        run: |
+          VERSION=$(docker image inspect quay.io/quay.io/keycloak/keycloak:latest --format='{{ index .Config.Labels "org.opencontainers.image.version" }}')
+          echo "::set-output name=version::$VERSION"
+
+      - name: Tag the Docker image with version
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          docker tag quay.io/keycloak/keycloak:latest docker.pkg.github.com/sixpeteunder/keycloak/keycloak:$VERSION
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+
+      - name: Push Docker image to GitHub Container Registry
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          docker push docker.pkg.github.com/sixpeteunder/keycloak/keycloak:$VERSION
