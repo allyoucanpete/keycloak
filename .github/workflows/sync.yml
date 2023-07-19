@@ -40,7 +40,7 @@ jobs:
       - name: Tag the Docker image with version
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          docker tag quay.io/keycloak/keycloak:latest docker.pkg.github.com/sixpeteunder/keycloak/keycloak:$VERSION
+          docker tag quay.io/keycloak/keycloak:latest docker.pkg.github.com/sixpeteunder/keycloak:$VERSION
 
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
@@ -48,4 +48,4 @@ jobs:
       - name: Push Docker image to GitHub Container Registry
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          docker push docker.pkg.github.com/sixpeteunder/keycloak/keycloak:$VERSION
+          docker push docker.pkg.github.com/sixpeteunder/keycloak:$VERSION
